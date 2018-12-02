@@ -1,0 +1,152 @@
+% !TEX root = ../thesis-example.tex
+%
+\chapter{Construction}
+\label{sec:system}
+
+\section{OCL Constraints}
+%\subsection*{}
+\begin{itemize}
+\itemsep-1.1em 
+\item \textbf{context} SubmissionGroup
+\\
+\textbf{inv} MultipleArtifactSubmission:self.isMultiple=true implies self.Contains->size() > 2
+
+\item \textbf{context} Lecturer::approveTeamRegistration(int teamId)
+\\
+\textbf{post:} self.ManagesTeam->select(t:Team | t.id = teamId)->forAll(t2:Team | t.isApproved = true)
+
+
+\item \textbf{context} Lecturer::assignRPMToTeam(int teamId, int rpmId)
+\\
+\textbf{post:} self.ManagesTeam->select(t:Team | t.id = teamId)->forAll(t2:Team | t.AssignedTo.id = rpmId)
+
+
+\item \textbf{context} Lecturer::reviewRPM (int rating, string description, int submissionGroupId, int rpmId) 
+\\
+\textbf{post:} self.PersonReview.rate = rating and self.PersonReview.description = description
+
+\item \textbf{context} Lecturer::reviewReviwer(int rating, string description, int artiractId, int reviewerId)
+\\
+\textbf{post:} self.PersonReview.rate = rating and self.PersonReview.description = description
+
+\item \textbf{context} Lecturer::reviewArtifact(int rating, string description, int submissionGroupId)
+\\
+\textbf{post:} self.Creates->select(fr: Final Review | fr.GivenFor.id = submissionGroupId) ->forAll(fr2: FinalReview | fr2.rate = rating and fr2.description = description)
+
+\item \textbf{context} Artifact::updateArtifact (int ownerId, string newContent) : Artifact
+\\
+\textbf{post:} result.oclIsNew() = true and result.previous= self and result.content = newContent
+
+
+\item \textbf{context} SubmissionGroup::add(Artifact a)
+\\
+\textbf{post:} self.contains->includes(result) 
+
+\item \textbf{context} SubmissionGroup::submit() : Artifact
+\\
+\textbf{post:} self.creates.AssignedTo->includes(self.ManagedBy)
+
+\item \textbf{context} Submitter::submitArtifact(string content) : Artifact
+\\
+\textbf{post:} result.oclIsNew() = true and result.content = content
+
+
+\item \textbf{context} Submitter::submitArtifacts(string[] contents) : Set(Artifact)
+\\
+\textbf{post:} result->forAll(a:Artifact, int i=0 | a.oclIsNew() = true and a.content = contents[i++])
+
+
+\item \textbf{context} RPM::reviewArtifact (int artifactId, int rating, string description)
+\\
+\textbf{post:} self.createsReview->select(a:Artifact | a.id = artifactId)->forAll(a2:Artifact | a2.Rates.rate = rating and a2.Rates.description = description)
+
+
+\item \textbf{context} RPM::assignReviewerToArtifact (int artifactId, int reviewerId)
+\\
+\textbf{post:} self.ManagesReviewer->select(r: Reviewer | r.id = reviewerId)->forAll(r2: Reviewer | r2.createsReviewFor->includes(a:Artifact | a.id = artifactId)
+
+
+\item \textbf{context} Reviewer::reviewArtifact (int artifactId, int rating, string description) 
+\\
+\textbf{post:} self.createsReview->select(a:Artifact | a.id = artifactId)->forAll(a2:Artifact | a2.Rates.rate = rating and a2.Rates.description = description)
+
+
+\item \textbf{context} Admin::registerUser(username:string,password:string):User
+\\
+\textbf{post:} result.oclIsNew() = true and result.name = username and result.passwordHash = passwordand self.managesUser->includes(result)
+
+
+
+
+\item \textbf{context} Admin::removeUser(username:string)
+\\
+\textbf{post:} self.managesUser->excludes(result)
+
+
+\item \textbf{context} Admin::addReviewTemplate(int artifactType, string data):ReviewTemplate
+\textbf{post:} result.oclIsNew() = true and self.accesses->includes(result) and result.type ->includes(at:ArtifactType| at.type = artifactType)
+
+
+
+\end{itemize}
+
+
+
+
+\section{Test Plan}
+Table 3.2 describes  the  description  of  each  test  case  mentioned in  table 3.1 and  the  results expected from a corresponding test case.
+
+\begin{table}[h]
+\centering
+\caption{Use cases and test cases}
+\label{my-label}
+\begin{tabular}{ccc}
+\hline
+
+\multicolumn{1}{|c|}{\textbf{Use Case ID}} & \multicolumn{1}{c|}{\textbf{Description}} & \multicolumn{1}{c|}{\textbf{Test Case}} \\ \hline
+\multicolumn{1}{|c|}{UC-16} & \multicolumn{1}{c|}{View Results} & \multicolumn{1}{c|}{TC-1} \\ \hline
+\multicolumn{1}{|c|}{UC-3} & \multicolumn{1}{c|}{Register Team} & \multicolumn{1}{c|}{TC-2,TC-3,TC-4,TC-5} \\ \hline
+\multicolumn{1}{|c|}{UC-4} & \multicolumn{1}{c|}{Submit Artifact for Review} & \multicolumn{1}{c|}{TC-6,TC-7} \\ \hline
+\multicolumn{1}{|c|}{UC-5} & \multicolumn{1}{c|}{Assign Reviewer to Artifact} & \multicolumn{1}{c|}{TC-8} \\ \hline
+\multicolumn{1}{|c|}{UC-6} & \multicolumn{1}{c|}{Rate Artifact} & \multicolumn{1}{c|}{TC-9} \\ \hline
+\multicolumn{1}{|c|}{UC-1} & \multicolumn{1}{c|}{Review Artifact} & \multicolumn{1}{c|}{TC-10} \\ \hline
+\multicolumn{1}{|c|}{UC-2} & \multicolumn{1}{c|}{Assign Team to RPM} & \multicolumn{1}{c|}{TC-11} \\ \hline
+\multicolumn{1}{|c|}{UC-7} & \multicolumn{1}{c|}{Rate Artifact 2} & \multicolumn{1}{c|}{TC-12} \\ \hline
+\multicolumn{1}{|c|}{UC-13} & \multicolumn{1}{c|}{Modify Account} & \multicolumn{1}{c|}{TC-13} \\ \hline
+\multicolumn{1}{|c|}{UC-14} & \multicolumn{1}{c|}{Remove Account} & \multicolumn{1}{c|}{TC-14} \\ \hline
+ &  &  \\
+ &  &  \\
+ &  & 
+\end{tabular}
+\end{table}
+
+\begin{center}
+\begin{table}[]
+\caption{Description and the expected results for each test case }
+\label{my-label}
+    \begin{tabular}{ | l | l | p{5cm} | p{5cm} |}
+    \hline
+\multicolumn{1}{|c|}{\textbf{Test Case}} & \multicolumn{1}{c|}{\textbf{Use Case ID}} & \multicolumn{1}{c|}{\textbf{Description}}                                                                    & \multicolumn{1}{c|}{\textbf{Expected Result}}                                                         \\ \hline
+TC-1                                     & UC-16                                     & One submitter wants to view another team’s review.                                                           & A message will show denying to show another team's review.                                            \\ \hline
+TC-2                                     & UC-3                                      & Submitter does not have sufficient team members or the team members are not allowed to make a group.         & A message will be appeared showing the terms and conditions to make a team.                           \\ \hline
+TC-3                                     & UC-3                                      & Submitter provides all the information of the group members and submit an application to register as a team. & A message will be displayed to confirm registration via email.                                        \\ \hline
+TC-4                                     & UC-3                                      & All group members confirm their email addresses.                                                             & A message will appear that ‘Registration has been completed’.                                         \\ \hline
+
+TC-5                                     & UC-3                                      & Any of the persons (Lecturer, RPM, Reviewer) submits an application to register                              & A message will show the deny of submission.                                                           \\ \hline
+
+
+TC-6                                     & UC-4                                      & The group is not authenticated and registered                                                                & A message will show the deny of submission.                                                           \\ \hline
+TC-7                                     & UC-4                                      & All artifacts are not submitted                                                                              & A message will show an incomplete submission.                                                         \\ \hline
+TC-8                                     & UC-5                                      & The RPM selects a Reviewer who is already involved in reviewing another group’s artifact                     & Message will be appeared showing the other Reviewers who are not assigned in reviewing any artifacts. \\ \hline
+TC-9                                     & UC-6                                      & The RPM rates artifacts when reviews from all reviewers are not been received.                               & System will show a message to view all reviews.                                                       \\ \hline
+TC-10                                    & UC-1                                      & Reviewer does not use the review template.                                                                   & A message will appear to use the template.                                                            \\ \hline
+TC-11                                    & UC-2                                      & The RPM is not authenticated                                                                                 & A screen will be displayed showing an error.                                                          \\ \hline
+TC-12                                    & UC-7                                      & All RPM have not submitted their ratings                                                                     & A window will show the lecturer the remaining RPMs who have not submitted the reviews yet.            \\ \hline
+TC-13                                    & UC-13                                     & The account does not exist.                                                                                  & A message will be displayed showing an error.                                                         \\ \hline
+TC-14                                    & UC-14                                     & The account does not exist.                                                                                  & A message will be displayed showing an error.                                                         \\ \hline
+\end{tabular}%
+
+\end{table}
+
+\end{center}
+\newpage

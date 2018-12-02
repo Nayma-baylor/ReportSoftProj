@@ -1,0 +1,27 @@
+% !TEX root = ../thesis-example.tex
+%
+%************************************************
+% Declaration
+%************************************************
+%\pdfbookmark[0]{setup}{setup}
+\chapter{Setup \& Installation}
+\label{sec:chapter-setup}
+
+\section{Step by Step Instructions:}
+
+\begin{enumerate}
+\itemsep-1.1em 
+    \item Install IntelliJ IDEA: Ultimate Edition from this link: \textcolor{ctcolormain}{ \href{https://www.jetbrains.com/idea/download/download-thanks.html?platform=windows}{ Click this Link}}.
+    \item Setup IntelliJ IDE to use Git tools.
+    \item Clone the project from this link on GitHub:\textcolor{ctcolormain}{ \href{https://github.com/TimArt/SoftProj/tree/DatabaseIntegration}{ Click this Link}}
+    \item Install MySQL Workbench 8.0 Community Edition from this link : \textcolor{ctcolormain}{ \href{https://dev.mysql.com/downloads/}{ Click this Link}}. [Not Necessary if GUI is not preferred and already have MySQL DBMS installed in the system] 
+    \item Import the Database Schema from the link: \textcolor{ctcolormain}{ \href{https://github.com/TimArt/SoftProj/tree/DatabaseIntegration/db-src}{ database.sql}}.
+    \item After cloning the project in your IDE, right-click the file 'mysql-connector-java-5.1.47-bin.jar' in your Project Explorer and select 'Add as library' for your project. [This is a workaround for a a problem in IntelliJ IDE]
+    \item Following the instructions mentioned in the link for MySQL connect to the database schema: \textcolor{ctcolormain}{ \href{https://www.jetbrains.com/help/idea/connecting-to-a-database.html}{ Click this Link}}.
+    \item Make sure the \textit{username} and \textit{password} fields in the src/main/DatabaseUtil.java file of your project have correct values according to your MySQL DBMS.
+    \item Explore \textcolor{ctcolormain}{ SoftProj!!}
+\end{enumerate}
+
+
+%*****************************************
+%*****************************************
